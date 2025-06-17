@@ -91,6 +91,23 @@ export default function App() {
         style={styles.list}
       />
       <View style={styles.playerContainer}>
+        {playbackState?.playingTrack && (
+          <View style={styles.nowPlayingContainer}>
+            <Image
+              source={{ uri: String(playbackState.playingTrack.artwork) }}
+              style={styles.nowPlayingArtwork}
+              resizeMode="cover"
+            />
+            <View style={styles.nowPlayingInfo}>
+              <Text style={styles.nowPlayingTitle}>
+                {playbackState.playingTrack.title}
+              </Text>
+              <Text style={styles.nowPlayingArtist}>
+                {playbackState.playingTrack.artist}
+              </Text>
+            </View>
+          </View>
+        )}
         <View style={styles.controls}>
           <TouchableOpacity onPress={prevTrack} style={styles.button}>
             <Text style={styles.buttonText}>⏮️</Text>
@@ -108,10 +125,6 @@ export default function App() {
         </View>
 
         <ProgressSlider />
-
-        <Text style={styles.currentTrackInfo}>
-          {playbackState?.playingTrack?.title || 'No track playing'}
-        </Text>
       </View>
     </SafeAreaView>
   );
@@ -131,8 +144,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#e6f7e6',
     borderTopWidth: 1,
     borderTopColor: 'white',
-    borderRadius:20,
-    marginBottom:40
+    borderRadius: 20,
+    marginBottom: 0,
+  },
+  nowPlayingContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  nowPlayingArtwork: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  nowPlayingInfo: {
+    alignItems: 'center',
+  },
+  nowPlayingTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1DB954',
+    textAlign: 'center',
+  },
+  nowPlayingArtist: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 5,
   },
   trackItem: {
     flexDirection: 'row',
@@ -204,12 +241,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 24,
-  },
-  currentTrackInfo: {
-    fontSize: 16,
-    color: '#333',
-    textAlign: 'center',
-    marginTop: 10,
   },
 });
 

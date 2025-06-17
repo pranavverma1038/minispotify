@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useAudioPro, AudioPro, AudioProState } from 'react-native-audio-pro';
 import { playbackService, setupPlayer, addTrack, togglePlayPause, nextTrack, prevTrack, cleanup } from '../musicPlayerServices';
 import { EmitterSubscription } from 'react-native';
+import ProgressSlider from './components/ProgressSlider';
 
 export default function App() {
   const [isPlayerReady, setIsPlayerReady] = useState(false);
@@ -62,6 +63,8 @@ export default function App() {
           <Text style={styles.buttonText}>⏭️</Text>
         </TouchableOpacity>
       </View>
+
+      <ProgressSlider />
 
       <Text style={styles.trackInfo}>
         {playbackState?.playingTrack?.title || 'No track playing'}

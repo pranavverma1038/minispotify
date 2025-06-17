@@ -147,6 +147,28 @@ export async function playbackService() {
   }
 }
 
+export async function playTrack(track) {
+  try {
+    // Find the index of the track in the playlist
+    currentTrackIndex = trackPlaylistData.findIndex(t => t.id === track.id);
+    if (currentTrackIndex === -1) {
+      console.error('Track not found in playlist');
+      return;
+    }
+    
+    await AudioPro.stop();
+    await AudioPro.play(track, {
+      autoPlay: true,
+      keepAwake: true,
+      waitForBuffer: true,
+      artwork: track.artwork,
+    });
+    isPlaying = true;
+  } catch (error) {
+    console.error('Error playing track:', error);
+  }
+}
+
 export function cleanup() {
   if (eventListener) {
     try {

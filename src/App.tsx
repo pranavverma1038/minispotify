@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TouchableOpacity, Image, FlatList } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useAudioPro, AudioPro, AudioProState } from 'react-native-audio-pro';
-import { playbackService, setupPlayer, addTrack, togglePlayPause, nextTrack, prevTrack, cleanup } from '../musicPlayerServices';
+import { playbackService, setupPlayer, addTrack, togglePlayPause, nextTrack, prevTrack, cleanup, playTrack } from '../musicPlayerServices';
 import { EmitterSubscription } from 'react-native';
 import ProgressSlider from './components/ProgressSlider';
 import { trackPlaylistData } from './constants';
@@ -59,10 +59,13 @@ export default function App() {
     const isCurrentTrack = playbackState?.playingTrack?.title === item.title;
     
     return (
-      <View style={[
-        styles.trackItem,
-        isCurrentTrack && styles.currentTrackItem
-      ]}>
+      <TouchableOpacity 
+        onPress={() => playTrack(item)}
+        style={[
+          styles.trackItem,
+          isCurrentTrack && styles.currentTrackItem
+        ]}
+      >
         <Image
           source={{ uri: item.artwork }}
           style={styles.trackArtwork}
@@ -78,7 +81,7 @@ export default function App() {
             isCurrentTrack && styles.currentTrackArtist
           ]}>{item.artist}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 

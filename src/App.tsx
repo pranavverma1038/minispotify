@@ -120,7 +120,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'black',
   },
   list: {
     flex: 1,
@@ -128,9 +128,11 @@ const styles = StyleSheet.create({
   },
   playerContainer: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#e6f7e6',
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: 'white',
+    borderRadius:20,
+    marginBottom:40
   },
   trackItem: {
     flexDirection: 'row',

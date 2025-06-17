@@ -1,9 +1,18 @@
-import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TouchableOpacity, Image, FlatList } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useAudioPro, AudioPro, AudioProState } from 'react-native-audio-pro';
 import { playbackService, setupPlayer, addTrack, togglePlayPause, nextTrack, prevTrack, cleanup } from '../musicPlayerServices';
 import { EmitterSubscription } from 'react-native';
 import ProgressSlider from './components/ProgressSlider';
+import { trackPlaylistData } from './constants';
+
+interface Track {
+  id: string;
+  title: string;
+  artist: string;
+  artwork: string;
+  url: string;
+}
 
 export default function App() {
   const [isPlayerReady, setIsPlayerReady] = useState(false);
@@ -46,29 +55,64 @@ export default function App() {
 
   const isPlaying = playbackState?.state === AudioProState.PLAYING;
 
+  const renderTrackItem = ({ item }: { item: Track }) => {
+    const isCurrentTrack = playbackState?.playingTrack?.title === item.title;
+    
+    return (
+      <View style={[
+        styles.trackItem,
+        isCurrentTrack && styles.currentTrackItem
+      ]}>
+        <Image
+          source={{ uri: item.artwork }}
+          style={styles.trackArtwork}
+          resizeMode="cover"
+        />
+        <View style={styles.trackInfoContainer}>
+          <Text style={[
+            styles.trackTitle,
+            isCurrentTrack && styles.currentTrackTitle
+          ]}>{item.title}</Text>
+          <Text style={[
+            styles.trackArtist,
+            isCurrentTrack && styles.currentTrackArtist
+          ]}>{item.artist}</Text>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.controls}>
-        <TouchableOpacity onPress={prevTrack} style={styles.button}>
-          <Text style={styles.buttonText}>⏮️</Text>
-        </TouchableOpacity>
+      <FlatList
+        data={trackPlaylistData}
+        keyExtractor={item => item.id}
+        renderItem={renderTrackItem}
+        style={styles.list}
+      />
+      <View style={styles.playerContainer}>
+        <View style={styles.controls}>
+          <TouchableOpacity onPress={prevTrack} style={styles.button}>
+            <Text style={styles.buttonText}>⏮️</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={togglePlayPause} style={styles.button}>
-          <Text style={styles.buttonText}>
-            {isPlaying ? '⏸️' : '▶️'}
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={togglePlayPause} style={styles.button}>
+            <Text style={styles.buttonText}>
+              {isPlaying ? '⏸️' : '▶️'}
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={nextTrack} style={styles.button}>
-          <Text style={styles.buttonText}>⏭️</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={nextTrack} style={styles.button}>
+            <Text style={styles.buttonText}>⏭️</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ProgressSlider />
+
+        <Text style={styles.currentTrackInfo}>
+          {playbackState?.playingTrack?.title || 'No track playing'}
+        </Text>
       </View>
-
-      <ProgressSlider />
-
-      <Text style={styles.trackInfo}>
-        {playbackState?.playingTrack?.title || 'No track playing'}
-      </Text>
     </SafeAreaView>
   );
 }
@@ -76,15 +120,72 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#f5f5f5',
+  },
+  list: {
+    flex: 1,
+    width: '100%',
+  },
+  playerContainer: {
+    padding: 20,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  trackItem: {
+    flexDirection: 'row',
+    padding: 10,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    marginVertical: 4,
+    marginHorizontal: 8,
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+  },
+  currentTrackItem: {
+    backgroundColor: '#e6f7e6',
+    borderLeftWidth: 4,
+    borderLeftColor: '#1DB954',
+  },
+  trackArtwork: {
+    width: 60,
+    height: 60,
+    borderRadius: 4,
+  },
+  trackInfoContainer: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  trackTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  currentTrackTitle: {
+    color: '#1DB954',
+    fontWeight: '700',
+  },
+  trackArtist: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  currentTrackArtist: {
+    color: '#1DB954',
   },
   controls: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 20,
+    marginBottom: 20,
   },
   button: {
     padding: 15,
@@ -102,10 +203,11 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 24,
   },
-  trackInfo: {
-    marginTop: 20,
+  currentTrackInfo: {
     fontSize: 16,
     color: '#333',
-  }
+    textAlign: 'center',
+    marginTop: 10,
+  },
 });
 
